@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Ventas - Licencias de Software</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2C3E50;
+            --primary-light: #34495E;
+            --accent: #E74C3C;
+            --accent-dark: #C0392B;
+            --success: #27AE60;
+            --warning: #F39C12;
+            --info: #3498DB;
+            --purple: #9B59B6;
+            --bg-dark: #1A1A2E;
+            --bg-light: #F8F9FA;
+            --text-dark: #2C3E50;
+            --text-light: #7F8C8D;
+            --border: #E0E0E0;
+            --shadow: rgba(0,0,0,0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text-dark);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 30px 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px var(--shadow);
+            animation: slideDown 0.6s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 20px var(--shadow);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeInUp 0.6s ease;
+            animation-fill-mode: both;
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent), var(--warning));
+        }
+
+        .stat-card.success::before {
+            background: linear-gradient(90deg, var(--success), var(--info));
+        }
+
+        .stat-card.info::before {
+            background: linear-gradient(90deg, var(--info), var(--purple));
+        }
+
+        .stat-card.warning::before {
+            background: linear-gradient(90deg, var(--warning), var(--accent));
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .stat-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 20px var(--shadow);
+            animation: fadeInUp 0.6s ease;
+            animation-delay: 0.5s;
+            animation-fill-mode: both;
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .form-section {
+            grid-column: 1 / -1;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        input, select {
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: 'Manrope', sans-serif;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+        }
+
+        input[type="number"] {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .btn {
+            padding: 14px 32px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        thead {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr:hover {
+            background: #F8F9FA;
+        }
+
+        .vendor-bar {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .vendor-name {
+            min-width: 100px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .bar-container {
+            flex: 1;
+            height: 30px;
+            background: var(--bg-light);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--warning));
+            border-radius: 15px;
+            transition: width 1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .progress-ring {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            position: relative;
+        }
+
+        .progress-ring svg {
+            transform: rotate(-90deg);
+        }
+
+        .progress-ring circle {
+            fill: none;
+            stroke-width: 12;
+        }
+
+        .progress-ring .bg {
+            stroke: var(--bg-light);
+        }
+
+        .progress-ring .progress {
+            stroke: url(#gradient);
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1s ease;
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .progress-text .percentage {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--accent);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .progress-text .label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Dashboard de Ventas</h1>
+            <p>Sistema de Gestión de Licencias de Software</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Clientes</div>
+                <div class="stat-value" id="totalClientes">0</div>
+                <div class="stat-subtitle">Atendidos este mes</div>
+            </div>
+
+            <div class="stat-card success">
+                <div class="stat-label">Ventas del Mes</div>
+                <div class="stat-value" id="ventasMes">Q0</div>
+                <div class="stat-subtitle">Acumulado del grupo</div>
+            </div>
+
+            <div class="stat-card warning">
+                <div class="stat-label">Falta para Meta</div>
+                <div class="stat-value" id="faltaMeta">Q350,000</div>
+                <div class="stat-subtitle">Meta: Q350,000</div>
+            </div>
+
+            <div class="stat-card info">
+                <div class="stat-label">Progreso</div>
+                <div class="stat-value" id="progreso">0%</div>
+                <div class="stat-subtitle">De la meta mensual</div>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div class="card form-section">
+                <h2 class="card-title">
+                    <span class="card-icon" style="background: linear-gradient(135deg, var(--accent), var(--warning));">➕</span>
+                    Registrar Venta
+                </h2>
+                <form id="ventaForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="fecha">Fecha</label>
+                            <input type="date" id="fecha" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="ejecutiva">Ejecutiva</label>
+                            <select id="ejecutiva" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="Andrea">Andrea</option>
+                                <option value="Karen">Karen</option>
+                                <option value="Natalia">Natalia</option>
+                                <option value="Adilia">Adilia</option>
+                                <option value="Mishel">Mishel</option>
+                                <option value="Shirley">Shirley</option>
+                                <option value="Mariana">Mariana</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="ventaIndividual">Venta Individual (Q)</label>
+                            <input type="number" id="ventaIndividual" step="0.01" required placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label for="ventaGrupo">Ventas del Grupo (Q)</label>
+                            <input type="number" id="ventaGrupo" step="0.01" required placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label for="clientes">Clientes Atendidos</label>
+                            <input type="number" id="clientes" required placeholder="0">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn">💾 Registrar Venta</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div class="card">
+                <h2 class="card-title">
+                    <span class="card-icon" style="background: linear-gradient(135deg, var(--success), var(--info));">👥</span>
+                    Ventas por Ejecutiva
+                </h2>
+                <div id="ventasPorEjecutiva"></div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">
+                    <span class="card-icon" style="background: linear-gradient(135deg, var(--info), var(--purple));">🎯</span>
+                    Progreso hacia Meta
+                </h2>
+                <div class="progress-ring">
+                    <svg width="200" height="200">
+                        <defs>
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#E74C3C;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#F39C12;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <circle class="bg" cx="100" cy="100" r="85" />
+                        <circle class="progress" cx="100" cy="100" r="85" 
+                                stroke-dasharray="534.07" 
+                                stroke-dashoffset="534.07"
+                                id="progressCircle" />
+                    </svg>
+                    <div class="progress-text">
+                        <div class="percentage" id="progressPercentage">0%</div>
+                        <div class="label">Completado</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">
+                <span class="card-icon" style="background: linear-gradient(135deg, var(--primary), var(--accent));">📋</span>
+                Historial de Ventas
+            </h2>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Ejecutiva</th>
+                            <th>Venta Individual</th>
+                            <th>Ventas del Grupo</th>
+                            <th>Clientes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historialVentas">
+                        <tr>
+                            <td colspan="5" class="empty-state">
+                                <div>
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    <p>No hay ventas registradas aún</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuración
+        const META_MENSUAL = 350000;
+        const ejecutivas = ['Andrea', 'Karen', 'Natalia', 'Adilia', 'Mishel', 'Shirley', 'Mariana'];
+
+        // Inicializar datos desde localStorage
+        let ventas = JSON.parse(localStorage.getItem('ventas')) || [];
+
+        // Establecer fecha actual
+        document.getElementById('fecha').valueAsDate = new Date();
+
+        // Función para formatear moneda
+        function formatCurrency(amount) {
+            return 'Q' + amount.toLocaleString('es-GT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        // Función para calcular estadísticas
+        function calcularEstadisticas() {
+            const totalClientes = ventas.reduce((sum, v) => sum + parseInt(v.clientes), 0);
+            const ventasMesActual = ventas.length > 0 ? Math.max(...ventas.map(v => parseFloat(v.ventaGrupo))) : 0;
+            const faltaMeta = META_MENSUAL - ventasMesActual;
+            const progreso = (ventasMesActual / META_MENSUAL) * 100;
+
+            document.getElementById('totalClientes').textContent = totalClientes.toLocaleString();
+            document.getElementById('ventasMes').textContent = formatCurrency(ventasMesActual);
+            document.getElementById('faltaMeta').textContent = formatCurrency(Math.max(0, faltaMeta));
+            document.getElementById('progreso').textContent = progreso.toFixed(1) + '%';
+            document.getElementById('progressPercentage').textContent = progreso.toFixed(0) + '%';
+
+            // Actualizar círculo de progreso
+            const circumference = 534.07;
+            const offset = circumference - (progreso / 100) * circumference;
+            document.getElementById('progressCircle').style.strokeDashoffset = offset;
+        }
+
+        // Función para calcular ventas por ejecutiva
+        function calcularVentasPorEjecutiva() {
+            const ventasPorEjecutiva = {};
+            ejecutivas.forEach(v => ventasPorEjecutiva[v] = 0);
+            
+            ventas.forEach(venta => {
+                ventasPorEjecutiva[venta.ejecutiva] += parseFloat(venta.ventaIndividual);
+            });
+
+            const maxVenta = Math.max(...Object.values(ventasPorEjecutiva));
+            
+            const container = document.getElementById('ventasPorEjecutiva');
+            container.innerHTML = '';
+
+            ejecutivas.forEach(ejecutiva => {
+                const venta = ventasPorEjecutiva[ejecutiva];
+                const percentage = maxVenta > 0 ? (venta / maxVenta) * 100 : 0;
+                
+                const barDiv = document.createElement('div');
+                barDiv.className = 'vendor-bar';
+                barDiv.innerHTML = `
+                    <div class="vendor-name">${ejecutiva}</div>
+                    <div class="bar-container">
+                        <div class="bar-fill" style="width: ${percentage}%">
+                            ${formatCurrency(venta)}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(barDiv);
+            });
+        }
+
+        // Función para actualizar historial
+        function actualizarHistorial() {
+            const tbody = document.getElementById('historialVentas');
+            
+            if (ventas.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            <div>
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                <p>No hay ventas registradas aún</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = ventas.slice().reverse().map(venta => `
+                <tr>
+                    <td>${new Date(venta.fecha).toLocaleDateString('es-GT')}</td>
+                    <td><strong>${venta.ejecutiva}</strong></td>
+                    <td>${formatCurrency(parseFloat(venta.ventaIndividual))}</td>
+                    <td>${formatCurrency(parseFloat(venta.ventaGrupo))}</td>
+                    <td>${venta.clientes}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Manejar envío del formulario
+        document.getElementById('ventaForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const nuevaVenta = {
+                fecha: document.getElementById('fecha').value,
+                ejecutiva: document.getElementById('ejecutiva').value,
+                ventaIndividual: document.getElementById('ventaIndividual').value,
+                ventaGrupo: document.getElementById('ventaGrupo').value,
+                clientes: document.getElementById('clientes').value
+            };
+
+            ventas.push(nuevaVenta);
+            localStorage.setItem('ventas', JSON.stringify(ventas));
+
+            // Limpiar formulario
+            this.reset();
+            document.getElementById('fecha').valueAsDate = new Date();
+
+            // Actualizar dashboard
+            actualizarDashboard();
+            
+            // Mostrar confirmación
+            alert('✅ Venta registrada exitosamente');
+        });
+
+        // Función para actualizar todo el dashboard
+        function actualizarDashboard() {
+            calcularEstadisticas();
+            calcularVentasPorEjecutiva();
+            actualizarHistorial();
+        }
+
+        // Inicializar dashboard
+        actualizarDashboard();
+    </script>
+</body>
+</html>
